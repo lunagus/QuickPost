@@ -52,16 +52,17 @@ function renderCodeViewer(container, text, filename, publicUrl, ext) {
 
   container.innerHTML = `
     <div class="editor-wrapper">
-      <div class="editor-header">
+      <div class="viewer-header">
           <div style="display: flex; gap: 1rem; align-items: baseline;">
             <span style="font-weight: 600; color: var(--text);">${filename}</span>
             <span style="font-size: 0.75rem; color: var(--text-muted);">${lines} lines • ${size}</span>
           </div>
-          <div style="display: flex; gap: 1rem; align-items: center;">
-              <button id="editBtn" class="header-btn">EDIT</button>
-              <button id="wrapBtn" class="header-btn">WRAP: OFF</button>
-              <a href="${publicUrl}" target="_blank" class="header-link">RAW</a>
-              <button id="copyBtn" class="header-btn">COPY</button>
+          <div class="viewer-actions">
+              <button id="downloadBtn" class="action-btn">DOWNLOAD</button>
+              <button id="editBtn" class="action-btn">EDIT</button>
+              <button id="wrapBtn" class="action-btn">WRAP: OFF</button>
+              <a href="${publicUrl}" target="_blank" class="action-btn">RAW</a>
+              <button id="copyBtn" class="action-btn">COPY</button>
           </div>
       </div>
       <pre id="codePre" class="line-numbers"><code class="language-${ext}">${escapeHtml(text)}</code></pre>
@@ -70,6 +71,23 @@ function renderCodeViewer(container, text, filename, publicUrl, ext) {
   `;
 
   // Attach Events
+  const downloadBtn = document.getElementById('downloadBtn');
+  downloadBtn.onclick = async () => {
+      try {
+          const blob = new Blob([text], { type: 'text/plain' });
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.style.display = 'none';
+          a.href = url;
+          a.download = filename; // Force original filename
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(url);
+      } catch (e) {
+          alert('Download failed: ' + e.message);
+      }
+  };
+
   const copyBtn = document.getElementById('copyBtn');
   copyBtn.onclick = async () => {
     try {

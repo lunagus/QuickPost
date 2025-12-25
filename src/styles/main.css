@@ -10,6 +10,8 @@
     --font-mono: 'JetBrains Mono', Consolas, monospace;
 }
 
+* { box-sizing: border-box; }
+
 body {
     background-color: var(--bg);
     color: var(--text);
@@ -31,3 +33,189 @@ body {
 h1 { font-size: 1.1rem; font-weight: 500; margin: 0; letter-spacing: -0.02em; }
 .subtitle { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.5rem; margin-bottom: 3rem; }
 .hidden { display: none !important; }
+
+/* --- Responsive Components --- */
+
+/* Tabs */
+.tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    overflow-x: auto;
+    padding-bottom: 5px; /* For scrollbar space if needed */
+}
+.tab-btn {
+    white-space: nowrap;
+    padding: 0.5rem 1rem;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 0.95rem;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+}
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active { color: var(--text); border-bottom-color: var(--accent); }
+
+/* Upload/History Cards */
+.upload-box {
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 3rem 1rem;
+    text-align: center;
+    background: rgba(255,255,255,0.01);
+    transition: border-color 0.2s, background 0.2s;
+    cursor: pointer;
+    position: relative;
+}
+.upload-box:hover {
+    border-color: var(--border-hover);
+    background: rgba(255,255,255,0.02);
+}
+
+.history-card {
+    display: flex; 
+    flex-direction: column; 
+    gap: 0.75rem;
+    text-align: left;
+    padding: 1.5rem;
+    border: 1px solid var(--border); /* Override dashed */
+    cursor: default;
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.history-meta {
+    display: flex; 
+    flex-direction: column;
+}
+
+.tag {
+    font-size: 0.75rem; 
+    background: var(--surface); 
+    padding: 0.2rem 0.4rem; 
+    border-radius: 4px; 
+    border: 1px solid var(--border);
+    white-space: nowrap;
+}
+
+/* URL Input Group */
+.url-group {
+    position: relative; 
+    display: flex; 
+    align-items: center;
+    width: 100%;
+}
+
+.url-input {
+    width: 100%;
+    padding-right: 180px; /* Space for buttons */
+    text-overflow: ellipsis; 
+    background: rgba(255,255,255,0.05); 
+    padding: 0.8rem; 
+    border-radius: 4px; 
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.85rem;
+}
+
+.url-actions {
+    position: absolute; 
+    right: 5px; 
+    display: flex; 
+    gap: 5px;
+}
+
+.action-btn {
+    background: var(--surface); 
+    color: var(--text); 
+    border: 1px solid var(--border); 
+    padding: 0.3rem 0.6rem; 
+    font-size: 0.75rem; 
+    cursor: pointer; 
+    border-radius: 3px;
+    text-decoration: none; 
+    display: inline-flex; 
+    align-items: center;
+    white-space: nowrap;
+}
+.action-btn:hover { background: var(--border); }
+
+/* Viewer Header */
+.viewer-header {
+    display: flex; 
+    flex-wrap: wrap; /* Allow wrapping on mobile */
+    gap: 1rem; 
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.viewer-actions {
+    display: flex; 
+    gap: 0.5rem; 
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/* Mobile Adjustments */
+@media (max-width: 600px) {
+    .container {
+        padding: 2rem 1rem; /* Reduce padding on mobile */
+    }
+
+    .url-group {
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: stretch;
+    }
+    .url-input {
+        padding-right: 0.8rem; /* Remove right padding */
+        text-align: center;
+    }
+    .url-actions {
+        position: static; /* Stack below input */
+        justify-content: center;
+        width: 100%;
+    }
+    
+    .viewer-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.5rem;
+    }
+    .viewer-actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+    .action-btn {
+        flex: 1; /* Make buttons expand to fill touch targets */
+        justify-content: center;
+        padding: 0.6rem;
+    }
+    
+    .upload-controls {
+        flex-direction: column;
+    }
+    .upload-controls button {
+        width: 100%;
+    }
+}
+
+/* Upload Controls */
+.upload-controls {
+    margin-top: 2rem;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
