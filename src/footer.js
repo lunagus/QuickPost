@@ -135,14 +135,14 @@ function attachFooterEvents() {
         }
     };
 
-    // Report Submission (Mock for now, or email)
+    // Report Submission
     document.getElementById('submitReport').onclick = async () => {
          const btn = document.getElementById('submitReport');
          btn.disabled = true;
          btn.innerText = "Reporting...";
          
-         // In a real app, this would hit a backend or the same formspree with a different subject
-         // For now, we'll simulate a submission standard
+         
+         // In a real app, this would hit a backend. For now, we use Formspree.
          const link = document.getElementById('reportLink').value;
          const reason = document.getElementById('reportReason').value;
          
