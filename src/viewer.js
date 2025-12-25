@@ -58,6 +58,7 @@ function renderCodeViewer(container, text, filename, publicUrl, ext) {
             <span style="font-size: 0.75rem; color: var(--text-muted);">${lines} lines • ${size}</span>
           </div>
           <div style="display: flex; gap: 1rem; align-items: center;">
+              <button id="editBtn" class="header-btn">EDIT</button>
               <button id="wrapBtn" class="header-btn">WRAP: OFF</button>
               <a href="${publicUrl}" target="_blank" class="header-link">RAW</a>
               <button id="copyBtn" class="header-btn">COPY</button>
@@ -91,6 +92,30 @@ function renderCodeViewer(container, text, filename, publicUrl, ext) {
     pre.style.wordBreak = isWrapped ? 'break-word' : 'normal';
     wrapBtn.textContent = `WRAP: ${isWrapped ? 'ON' : 'OFF'}`;
   };
+
+  // Edit Feature
+  document.getElementById('editBtn').onclick = () => {
+    try {
+        localStorage.setItem('qp_edit_content', text);
+        window.location.href = '/';
+    } catch(e) {
+        alert('Browser storage full or disabled. Cannot edit.');
+    }
+  };
+
+  // Line Linking
+  setTimeout(() => {
+    if(window.location.hash && /^#L\d+$/.test(window.location.hash)) {
+        const lineNum = parseInt(window.location.hash.substring(2));
+        // Prism adds spans inside .line-numbers-rows, 1-indexed by nth-child
+        const lineEl = document.querySelector(`.line-numbers-rows > span:nth-child(${lineNum})`);
+        if(lineEl) {
+            lineEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            lineEl.style.backgroundColor = 'rgba(255, 215, 0, 0.3)'; // Highlight line number
+            // Optional: highlight the code line? Hard with Prism layout.
+        }
+    }
+  }, 500); // Small delay for Prism to render
 }
 
 function escapeHtml(text) {

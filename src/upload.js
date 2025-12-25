@@ -58,8 +58,6 @@ export function renderUpload(container) {
   attachEvents();
 }
 
-
-
 function attachEvents() {
   const fileView = document.getElementById('view-file');
   const textView = document.getElementById('view-text');
@@ -95,6 +93,17 @@ function attachEvents() {
       document.getElementById('langSelect').value = detected;
     }
   });
+
+  // Edit Feature: Check if we have content to edit
+  const editContent = localStorage.getItem('qp_edit_content');
+  if (editContent) {
+      localStorage.removeItem('qp_edit_content');
+      document.getElementById('tab-text').click();
+      codeInput.value = editContent;
+      // Trigger detection
+      codeInput.dispatchEvent(new Event('input'));
+  }
+
   // Global Paste Handler
   document.onpaste = (e) => {
     // Ignore if paste target is an editable input/textarea
@@ -167,16 +176,28 @@ async function handleUpload() {
   const customName = document.getElementById('customName').value.trim();
   let file, fileName;
 
+  // We need to store standard file object logic but maybe cache content for "Raw Copy"
+  let rawContentToCopy = null;
+
   if (isFile) {
     file = document.getElementById('fileInput').files[0];
     if (!file) return alert("No file selected");
     fileName = customName || file.name;
+    
+    // Attempt to read text for Raw Copy optimization (if small enough)
+    // Only if it looks like code/text
+    if(file.size < 1024 * 512) { // < 512KB
+        try {
+            rawContentToCopy = await file.text();
+        } catch(e) {}
+    }
   } else {
     const content = document.getElementById('codeInput').value;
     if (!content) return alert("Please enter some text");
     const ext = document.getElementById('langSelect').value;
     fileName = customName ? (customName.includes('.') ? customName : `${customName}.${ext}`) : `snippet.${ext}`;
     file = new File([content], fileName, { type: 'text/plain' });
+    rawContentToCopy = content;
   }
 
   // Generate Short ID
@@ -210,11 +231,14 @@ async function handleUpload() {
         
         <div style="position: relative; display: flex; align-items: center;">
             <input type="text" value="${directLink}" id="resultUrl" class="input-minimal" 
-                   style="padding-right: 120px; text-overflow: ellipsis; background: rgba(255,255,255,0.05); padding: 0.8rem; border-radius: 4px; border: 1px solid var(--border);" readonly>
+                   style="padding-right: 170px; text-overflow: ellipsis; background: rgba(255,255,255,0.05); padding: 0.8rem; border-radius: 4px; border: 1px solid var(--border);" readonly>
             
             <div style="position: absolute; right: 5px; display: flex; gap: 5px;">
                  <button onclick="showQr('${directLink}')" style="background: var(--surface); color: var(--text); border: 1px solid var(--border); padding: 0.3rem 0.6rem; font-size: 0.75rem; cursor: pointer; border-radius: 3px;" title="Show QR Code">
                     QR
+                </button>
+                 <button onclick="copyRaw()" style="background: var(--surface); color: var(--text); border: 1px solid var(--border); padding: 0.3rem 0.6rem; font-size: 0.75rem; cursor: pointer; border-radius: 3px;" title="Copy Raw Content">
+                    RAW
                 </button>
                 <button onclick="copyUrl()" style="background: var(--surface); color: var(--text); border: 1px solid var(--border); padding: 0.3rem 0.6rem; font-size: 0.75rem; cursor: pointer; border-radius: 3px;">
                     COPY
@@ -250,6 +274,27 @@ async function handleUpload() {
     const btn = document.querySelector('button[onclick="copyUrl()"]');
     btn.innerText = 'COPIED';
     setTimeout(() => btn.innerText = 'COPY', 1500);
+  };
+
+  window.copyRaw = () => {
+      // Use cached content if available, otherwise fetch URL
+      const resolveContent = async () => {
+          if (rawContentToCopy !== null) return rawContentToCopy;
+          // Fallback verify if file object is still accessible or fetch url?? 
+          // Actually, we can just fetch the uploaded URL if needed, but cross-origin issues might arise if not configured?
+          // Since it's same domain relative link, we can fetch
+          try {
+             return await (await fetch(directLink)).text();
+          } catch(e) { return null; }
+      };
+
+      resolveContent().then(text => {
+          if(!text) return alert("Content not available for raw copy.");
+          navigator.clipboard.writeText(text);
+          const btn = document.querySelector('button[onclick="copyRaw()"]');
+          btn.innerText = 'COPIED';
+          setTimeout(() => btn.innerText = 'RAW', 1500);
+      });
   };
 
   window.showQr = (url) => {

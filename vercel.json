@@ -1,4 +1,5 @@
 {
+  "name": "quickpost",
   "rewrites": [
     {
       "source": "/:id([a-zA-Z0-9]+)\\.jpg",
