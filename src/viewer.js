@@ -58,6 +58,19 @@ function renderCodeViewer(container, text, filename, publicUrl, ext) {
             <span style="font-size: 0.75rem; color: var(--text-muted);">${lines} lines • ${size}</span>
           </div>
           <div class="viewer-actions">
+              <select id="viewerLangSelect" style="background: transparent; border: 1px solid var(--border); border-radius: 4px; color: var(--text-muted); padding: 0.2rem 0.5rem; font-family: inherit; font-size: 0.75rem; margin-right: 0.5rem; cursor: pointer;">
+                  <option value="txt" ${ext === 'txt' ? 'selected' : ''}>Plain Text</option>
+                  <option value="py" ${ext === 'py' ? 'selected' : ''}>Python</option>
+                  <option value="js" ${ext === 'js' ? 'selected' : ''}>JavaScript</option>
+                  <option value="html" ${ext === 'html' ? 'selected' : ''}>HTML</option>
+                  <option value="css" ${ext === 'css' ? 'selected' : ''}>CSS</option>
+                  <option value="json" ${ext === 'json' ? 'selected' : ''}>JSON</option>
+                  <option value="java" ${ext === 'java' ? 'selected' : ''}>Java</option>
+                  <option value="c" ${ext === 'c' ? 'selected' : ''}>C / C++</option>
+                  <option value="ts" ${ext === 'ts' ? 'selected' : ''}>TypeScript</option>
+                  <option value="md" ${ext === 'md' ? 'selected' : ''}>Markdown</option>
+                  <option value="sql" ${ext === 'sql' ? 'selected' : ''}>SQL</option>
+              </select>
               <button id="downloadBtn" class="action-btn">DOWNLOAD</button>
               <button id="editBtn" class="action-btn">EDIT</button>
               <button id="wrapBtn" class="action-btn">WRAP: OFF</button>
@@ -134,6 +147,16 @@ function renderCodeViewer(container, text, filename, publicUrl, ext) {
         }
     }
   }, 500); // Small delay for Prism to render
+
+  // Dynamic Syntax Highlighting
+  document.getElementById('viewerLangSelect').onchange = (e) => {
+      const newLang = e.target.value;
+      const codeEl = document.querySelector('#codePre code');
+      // Reset class
+      codeEl.className = `language-${newLang}`;
+      // Re-highlight
+      Prism.highlightElement(codeEl);
+  };
 }
 
 function escapeHtml(text) {

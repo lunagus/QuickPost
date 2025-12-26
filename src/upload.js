@@ -29,13 +29,17 @@ export function renderUpload(container) {
       <div class="editor-wrapper">
         <div class="editor-header">
             <span>INPUT</span>
-            <select id="langSelect" style="background:none; border:none; color:#888;">
-                <option value="txt">Plain Text</option>
-                <option value="json">JSON</option>
-                <option value="js">JavaScript</option>
+            <select id="langSelect" style="background:none; border: 1px solid var(--border); border-radius: 4px; color: var(--text); font-family:inherit; cursor: pointer; padding: 2px 5px; font-size: 0.8rem;">
+                <option value="txt" selected>Plain Text</option>
                 <option value="py">Python</option>
+                <option value="js">JavaScript</option>
                 <option value="html">HTML</option>
                 <option value="css">CSS</option>
+                <option value="json">JSON</option>
+                <option value="java">Java</option>
+                <option value="c">C / C++</option>
+                <option value="ts">TypeScript</option>
+                <option value="md">Markdown</option>
                 <option value="sql">SQL</option>
             </select>
         </div>
@@ -150,6 +154,7 @@ function attachEvents() {
   // Close QR Modal logic
   document.getElementById('closeQr').onclick = () => document.getElementById('qrModal').classList.add('hidden');
 
+  /* Auto-detect removed as per user request
   const codeInput = document.getElementById('codeInput');
   codeInput.addEventListener('input', () => {
     const text = codeInput.value;
@@ -157,7 +162,8 @@ function attachEvents() {
     if (detected) {
       document.getElementById('langSelect').value = detected;
     }
-  });
+  }); 
+  */
 
   // Edit Feature: Check if we have content to edit
   const editContent = localStorage.getItem('qp_edit_content');
@@ -311,13 +317,37 @@ async function handleUpload() {
     }
 
     // 3. Filename Length Check
+    // 3. Filename Length Check
     if (fileName.length > 255) {
         throw new Error("Filename is too long. Please rename it to under 255 characters.");
     }
 
-    const shortId = Math.random().toString(36).substring(2, 5);
-    const ext = fileName.includes('.') ? fileName.split('.').pop().toLowerCase() : 'txt';
-    const path = `${shortId}.${ext}`;
+    // === FILENAME & PATH CONFIGURATION ===
+    // 1. Get exact extension from the source file (most reliable)
+    //    (For text pastes, we constructed the File object with an extension already)
+    const ext = file.name.includes('.') ? file.name.split('.').pop().toLowerCase() : 'txt';
+
+    // 2. Determine Base ID
+    let baseId;
+    if (customName) {
+        // Use custom name. If user typed "image.png" and ext is "png", strip it to avoid "image.png.png"
+        const lowerName = customName.toLowerCase();
+        const lowerExt = '.' + ext;
+        if (lowerName.endsWith(lowerExt)) {
+            baseId = customName.slice(0, -lowerExt.length);
+        } else {
+             baseId = customName;
+        }
+        // Minimal sanitization for URL safety (optional but good practice, user accepted '1')
+        // We leave it raw as requested for maximum customisability
+    } else {
+        // No custom name? Generate random Short ID
+        baseId = Math.random().toString(36).substring(2, 5);
+    }
+
+    const shortId = baseId; // For DB
+    const path = `${baseId}.${ext}`;
+    fileName = path; // Update display name to match the reality of what we store
 
     // Show loading state
     const btn = document.getElementById('uploadBtn');
