@@ -3,35 +3,35 @@
   "rewrites": [
     {
       "source": "/:id([a-zA-Z0-9]+)\\.jpg",
-      "destination": "https://aedqgktqfekkmavdyepl.supabase.co/storage/v1/object/public/uploads/:id.jpg"
+      "destination": "https://pub-5a982d0ce8c9473bb5fabdc82a76e57e.r2.dev/:id.jpg"
     },
     {
       "source": "/:id([a-zA-Z0-9]+)\\.jpeg",
-      "destination": "https://aedqgktqfekkmavdyepl.supabase.co/storage/v1/object/public/uploads/:id.jpeg"
+      "destination": "https://pub-5a982d0ce8c9473bb5fabdc82a76e57e.r2.dev/:id.jpeg"
     },
     {
       "source": "/:id([a-zA-Z0-9]+)\\.png",
-      "destination": "https://aedqgktqfekkmavdyepl.supabase.co/storage/v1/object/public/uploads/:id.png"
+      "destination": "https://pub-5a982d0ce8c9473bb5fabdc82a76e57e.r2.dev/:id.png"
     },
     {
       "source": "/:id([a-zA-Z0-9]+)\\.gif",
-      "destination": "https://aedqgktqfekkmavdyepl.supabase.co/storage/v1/object/public/uploads/:id.gif"
+      "destination": "https://pub-5a982d0ce8c9473bb5fabdc82a76e57e.r2.dev/:id.gif"
     },
     {
       "source": "/:id([a-zA-Z0-9]+)\\.webp",
-      "destination": "https://aedqgktqfekkmavdyepl.supabase.co/storage/v1/object/public/uploads/:id.webp"
+      "destination": "https://pub-5a982d0ce8c9473bb5fabdc82a76e57e.r2.dev/:id.webp"
     },
     {
       "source": "/:id([a-zA-Z0-9]+)\\.svg",
-      "destination": "https://aedqgktqfekkmavdyepl.supabase.co/storage/v1/object/public/uploads/:id.svg"
+      "destination": "https://pub-5a982d0ce8c9473bb5fabdc82a76e57e.r2.dev/:id.svg"
     },
     {
       "source": "/:id([a-zA-Z0-9]+)\\.zip",
-      "destination": "https://aedqgktqfekkmavdyepl.supabase.co/storage/v1/object/public/uploads/:id.zip"
+      "destination": "https://pub-5a982d0ce8c9473bb5fabdc82a76e57e.r2.dev/:id.zip"
     },
     {
       "source": "/:id([a-zA-Z0-9]+)\\.pdf",
-      "destination": "https://aedqgktqfekkmavdyepl.supabase.co/storage/v1/object/public/uploads/:id.pdf"
+      "destination": "https://pub-5a982d0ce8c9473bb5fabdc82a76e57e.r2.dev/:id.pdf"
     },
     {
       "source": "/(.*)",

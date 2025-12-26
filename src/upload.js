@@ -327,19 +327,48 @@ async function handleUpload() {
 
     // console.log('DEBUG: Starting upload:', { path, fileName, size: file.size, type: file.type });
 
-    // Standard upload
-    const { data: upData, error: upErr } = await supabase.storage.from('uploads').upload(path, file);
-    
-    // console.log('DEBUG: Upload result:', { upData, upErr });
-    if (upErr) throw upErr;
+    // console.log('DEBUG: Starting upload:', { path, fileName, size: file.size, type: file.type });
 
+    // === R2 UPLOAD LOGIC ===
+    // 1. Get Presigned URL from our new backend
+    const presignResponse = await fetch('/api/upload-url', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        fileName: path, // Use the generated path (shortId.ext) as the unique identifier
+        fileType: file.type
+      })
+    });
+
+    if (!presignResponse.ok) {
+        throw new Error('Failed to get secure upload URL from server');
+    }
+    
+    const { uploadUrl, fileName: r2FileName } = await presignResponse.json();
+
+    // 2. Upload directly to Cloudflare R2
+    const upload = await fetch(uploadUrl, {
+      method: 'PUT',
+      body: file,
+      headers: {
+        'Content-Type': file.type
+      }
+    });
+
+    if (!upload.ok) {
+        throw new Error('Upload to storage failed');
+    }
+
+    // 3. Save Metadata to Supabase (Database Only, no Storage upload here)
     // console.log('DEBUG: Inserting database record...');
+    // We store 'r2FileName' or just the path in 'storage_path' - keeping 'path' consistent
     const { error: dbErr } = await supabase.from('files').insert({ short_id: shortId, filename: fileName, storage_path: path });
     
     if (dbErr) throw dbErr;
 
     // === SUCCESS UI ===
-    const directLink = `${window.location.origin}/${shortId}.${ext}`;
+    // Update Direct Link to use new R2 domain
+    const directLink = `https://qpst.cc/${path}`;
     const showRaw = rawContentToCopy !== null && (ext === 'txt' || ext === 'js' || ext === 'py' || ext === 'html' || ext === 'css' || ext === 'json' || ext === 'sql' || ext === 'md');
 
     // === SAVE TO HISTORY ===
@@ -359,13 +388,9 @@ async function handleUpload() {
     const resultId = Math.random().toString(36).substring(7);
 
     resultCard.innerHTML = `
-      <div style="display: flex; flex-direction: column; gap: 0.5rem; width: 100%;">
-          <div class="history-header">
-              <div class="history-meta">
-                  <div style="color: var(--accent); font-size: 0.9rem; font-weight: 600;">UPLOAD COMPLETE</div>
-                  <div style="font-size: 0.8rem; color: var(--text-muted);">${fileName}</div>
-              </div>
-          </div>
+      <div style="display: flex; flex-direction: column; gap: 0.25rem; width: 100%; text-align: left;">
+          <div style="color: var(--accent); font-size: 1rem; font-weight: 700;">UPLOAD COMPLETE</div>
+          <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">File: ${fileName}</div>
           
           <div class="url-group">
               <input type="text" value="${directLink}" id="url-${resultId}" class="url-input" readonly>
@@ -378,7 +403,7 @@ async function handleUpload() {
               </div>
           </div>
           
-          <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">
+           <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">
               Expires in 24h
           </div>
       </div>

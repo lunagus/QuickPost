@@ -57,7 +57,7 @@ export function renderFooter(container) {
             <h3 class="modal-title" style="color: var(--warning);">Report Abuse</h3>
             <p class="modal-subtitle">Report content that violates our policies.</p>
             
-            <input type="text" id="reportLink" class="input-full" placeholder="Link to content (e.g. qp.ftp.sh/xyz)">
+            <input type="text" id="reportLink" class="input-full" placeholder="Link to content (e.g. qpst.cc/xyz)">
             <select id="reportReason" class="input-full">
                  <option value="" disabled selected>Select Reason</option>
                  <option value="malware">Malware / Virus</option>
