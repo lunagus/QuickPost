@@ -29,7 +29,7 @@ export function renderUpload(container) {
       <div class="editor-wrapper">
         <div class="editor-header">
             <span>INPUT</span>
-            <select id="langSelect" style="background:none; border: 1px solid var(--border); border-radius: 4px; color: var(--text); font-family:inherit; cursor: pointer; padding: 2px 5px; font-size: 0.8rem;">
+            <select id="langSelect" style="background:var(--bg); border: 1px solid var(--border); border-radius: 4px; color: var(--text); font-family:inherit; cursor: pointer; padding: 2px 5px; font-size: 0.8rem;">
                 <option value="txt" selected>Plain Text</option>
                 <option value="py">Python</option>
                 <option value="js">JavaScript</option>

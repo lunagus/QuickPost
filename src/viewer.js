@@ -13,7 +13,10 @@ export async function renderViewer(container, id) {
     return;
   }
 
-  const { data: { publicUrl } } = supabase.storage.from('uploads').getPublicUrl(file.storage_path);
+  // Use R2 Public URL directly (bypass Supabase Storage which is empty)
+  // We construct it manually since we know the structure
+  const R2_PUBLIC_URL = "https://pub-5a982d0ce8c9473bb5fabdc82a76e57e.r2.dev";
+  const publicUrl = `${R2_PUBLIC_URL}/${file.storage_path}`;
   const ext = file.filename.split('.').pop().toLowerCase();
   const isCode = ['js','py','json','html','css','txt','md','sql'].includes(ext);
 
@@ -58,7 +61,7 @@ function renderCodeViewer(container, text, filename, publicUrl, ext) {
             <span style="font-size: 0.75rem; color: var(--text-muted);">${lines} lines • ${size}</span>
           </div>
           <div class="viewer-actions">
-              <select id="viewerLangSelect" style="background: transparent; border: 1px solid var(--border); border-radius: 4px; color: var(--text-muted); padding: 0.2rem 0.5rem; font-family: inherit; font-size: 0.75rem; margin-right: 0.5rem; cursor: pointer;">
+              <select id="viewerLangSelect" style="background: var(--bg); border: 1px solid var(--border); border-radius: 4px; color: var(--text-muted); padding: 0.2rem 0.5rem; font-family: inherit; font-size: 0.75rem; margin-right: 0.5rem; cursor: pointer;">
                   <option value="txt" ${ext === 'txt' ? 'selected' : ''}>Plain Text</option>
                   <option value="py" ${ext === 'py' ? 'selected' : ''}>Python</option>
                   <option value="js" ${ext === 'js' ? 'selected' : ''}>JavaScript</option>
